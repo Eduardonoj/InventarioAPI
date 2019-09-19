@@ -27,6 +27,7 @@ namespace InventarioAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddAutoMapper(options =>{
                 options.CreateMap<CategoriaCreacionDTO, Categoria>(); // Esto lo hacemos para enlazar un DTO con una entidad
                 options.CreateMap<TipoEmpaqueCreacionDTO, TipoEmpaque>();
@@ -87,6 +88,7 @@ namespace InventarioAPI
 
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseCors(builder => builder.WithOrigins("*").WithMethods("*").WithHeaders("*"));
             app.UseMvc();
         }
     }

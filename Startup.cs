@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using InventarioAPI.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace InventarioAPI
 {
@@ -51,12 +52,17 @@ namespace InventarioAPI
             
             services.AddDbContext<InventarioDBContext>(Options => 
             Options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")));
+
             services.AddDbContext<InventarioIdentityContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("authtConnection")));
 
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<InventarioIdentityContext>()
+                .AddDefaultTokenProviders();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => options.TokenValidationParameters
-                = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                = new TokenValidationParameters
                 {
                     ValidateIssuer = false,
                     ValidateAudience= false,
@@ -67,7 +73,7 @@ namespace InventarioAPI
                     ClockSkew = TimeSpan.Zero
                 }) ;
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddJsonOptions(options => options.SerializerSettings.ReferenceLoopHandling
                 =Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             
